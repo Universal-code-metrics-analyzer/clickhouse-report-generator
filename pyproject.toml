@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "clickhouse_report_generator"
+version = "0.0.0"
+description = ""
+authors = ["Alex Pirogov <pirogovalexandr00@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.7.0"
+core = { git = "https://github.com/Universal-code-metrics-analyzer/core.git", rev = "v0.1.0" }
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.3.0"
+isort = "^5.13.2"
+flake8 = "^7.0.0"
+flake8-pyproject = "^1.2.3"
+
+
+[tool.flake8]
+max-line-length = 99
+select = ["C", "E", "F", "W", "B", "B950"]
+ignore = ["W503", "E704", "F541"]
+exclude = [".git", ".venv", "*__pycache__*"]
+count = true
+
+
+[tool.black]
+target-version = ["py312"]
+line-length = 99
+skip-string-normalization = true
+
+
+[tool.isort]
+profile = "black"
+line_length = 80
+known_first_party = ["."]
+
+
+[tool.poetry.plugins."ucma.report_generator.plugin"]
+export = "clickhouse_report_generator.generator:ClickHouseReportGenerator"
