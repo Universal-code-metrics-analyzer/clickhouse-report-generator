@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 pydantic = "^2.7.0"
-core = { git = "https://github.com/Universal-code-metrics-analyzer/core.git", rev = "v0.1.0" }
+asynch = "^0.2.3"
 
 
 [build-system]
