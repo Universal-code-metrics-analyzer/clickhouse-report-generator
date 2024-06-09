@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "clickhouse_report_generator"
-version = "0.0.0"
+version = "0.1.0"
 description = ""
 authors = ["Alex Pirogov <pirogovalexandr00@mail.ru>"]
 readme = "README.md"
