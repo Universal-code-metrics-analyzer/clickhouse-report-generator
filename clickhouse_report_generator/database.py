@@ -26,6 +26,7 @@ class MetricsDataRow(NamedTuple):
     subject_path: str
     value: float
     description: str | None
+    level: str | None
 
 
 class ClickHouseClient:
@@ -37,14 +38,14 @@ class ClickHouseClient:
         self.conn = None
         self.dsn = dsn
         self.database = database
-        self.metrics_table = metrics_table
-        self.commits_table = commits_table
+        self.metrics_table = database + '.' + metrics_table
+        self.commits_table = database + '.' + commits_table
 
     async def init(self):
         self.conn = await connect(
             host=self.dsn.host,
             port=self.dsn.port,
-            database=self.dsn.path,
+            database=self.dsn.path.removeprefix('/'),
             user=self.dsn.username,
             password=self.dsn.password,
         )
@@ -69,7 +70,7 @@ class ClickHouseClient:
 
             await cursor.execute(
                 (
-                    f"create table if not exists {self.database}.{self.commits_table} ("
+                    f"create table if not exists {self.commits_table} ("
                     + "sha String,"
                     + "author_email String,"
                     + "committer_email String,"
@@ -82,7 +83,7 @@ class ClickHouseClient:
 
             await cursor.execute(
                 (
-                    f"create table if not exists {self.database}.{self.metrics_table} ("
+                    f"create table if not exists {self.metrics_table} ("
                     + "sha String,"
                     + "name String,"
                     + "path String,"
@@ -90,15 +91,24 @@ class ClickHouseClient:
                     + "result_scope String,"
                     + "subject_path String,"
                     + "value Float64,"
-                    + "description Nullable(String)"
-                    + ") ENGINE MergeTree order by path"
+                    + "description Nullable(String),"
+                    + "level String"
+                    + ") ENGINE MergeTree order by sha"
                 )
             )
 
     async def insert_commits(self, rows: list[CommitDataRow]):
         async with self.cursor_context() as cursor:
-            await cursor.execute(f'insert into {self.database}.{self.commits_table} values', rows)
+            await cursor.execute(
+                f'delete from {self.commits_table}'
+                f' where sha in ({','.join([f"'{r.sha}'" for r in rows])})'
+            )
+            await cursor.execute(f'insert into {self.commits_table} values', rows)
 
     async def insert_metrics(self, rows: list[MetricsDataRow]):
         async with self.cursor_context() as cursor:
-            await cursor.execute(f'insert into {self.database}.{self.metrics_table} values', rows)
+            await cursor.execute(
+                f'delete from {self.metrics_table}'
+                f' where sha in ({','.join([f"'{r.sha}'" for r in rows])})'
+            )
+            await cursor.execute(f'insert into {self.metrics_table} values', rows)

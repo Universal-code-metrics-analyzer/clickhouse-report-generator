@@ -181,7 +181,7 @@ pydantic = "^2.7.0"
 type = "git"
 url = "https://github.com/Universal-code-metrics-analyzer/core.git"
 reference = "v0.2.0"
-resolved_reference = "ad6f99fa67ec5142917a7445007797255dd2d7c6"
+resolved_reference = "b82c3f9f49c56bd8f76f48917896c87ab6546a06"
 
 [[package]]
 name = "flake8"

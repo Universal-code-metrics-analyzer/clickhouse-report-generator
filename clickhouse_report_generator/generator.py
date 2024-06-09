@@ -27,6 +27,7 @@ class ClickHouseReportGenerator(
                 subject_path=result.subject_path,
                 value=result.value,
                 description=result.description,
+                level=result.level,
             )
             for result in blob.metric_results
         ]
